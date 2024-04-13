@@ -8,6 +8,7 @@ class RedisClient {
   constructor() {
     this.client = createClient();
     this.getAsync = promisify(this.client.get).bind(this.client);
+    this.setExAsync = promisify(this.client.setEx).bind(this.client);
 
     this.client.on('error', (error) => {
       console.log(`Redis client not connected to the server: ${error.message}`);
@@ -32,6 +33,7 @@ class RedisClient {
    * @return {string}  value of key
    */
   async get(key) {
+    await this.client.connect();
     const value = await this.getAsync(key);
     return value;
   }
@@ -44,7 +46,8 @@ class RedisClient {
    * @return {undefined}  No return
    */
   async set(key, value, duration) {
-    this.client.setex(key, duration, value);
+    await this.client.connect();
+    return this.setExAsync(key, duration, value);
   }
 
   /**
