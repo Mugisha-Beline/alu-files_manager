@@ -1,4 +1,3 @@
-/* eslint-disable jest/require-hook */
 import express from 'express';
 import AppController from '../controllers/AppController';
 
