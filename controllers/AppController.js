@@ -11,9 +11,9 @@ export default class AppController {
   }
 
   static async getStats(req, res) {
-    const stats = {
-      users: 140, courses: 16, subjects: 4, catalogs: 2,
-    };
+    const users = await dbClient.nbUsers();
+    const files = await dbClient.nbFiles();
+    const stats = { users, files };
     res.status(200).json(stats);
   }
 }

@@ -36,7 +36,7 @@ class DBClient {
    * @return {number} amount of users
    */
   async nbUsers() {
-    const numberOfUsers = this.usersCollection.countDocuments();
+    const numberOfUsers = await this.usersCollection.countDocuments();
     return numberOfUsers;
   }
 
