@@ -45,7 +45,7 @@ class DBClient {
    * @return {number} amount of files
    */
   async nbFiles() {
-    const numberOfFiles = this.filesCollection.countDocuments();
+    const numberOfFiles = await this.filesCollection.countDocuments();
     return numberOfFiles;
   }
 }

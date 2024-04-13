@@ -20,6 +20,7 @@ module.exports = {
     plugins: ['jest'],
     rules: {
       'max-classes-per-file': 'off',
+      'jest/require-hook': 'off',
       'no-underscore-dangle': 'off',
       'no-console': 'off',
       'no-shadow': 'off',
