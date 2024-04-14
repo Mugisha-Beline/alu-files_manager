@@ -8,10 +8,15 @@ class RedisClient {
   constructor() {
     this.client = createClient();
     this.getAsync = promisify(this.client.get).bind(this.client);
-    this.setExAsync = promisify(this.client.setEx).bind(this.client);
+    this.setExAsync = promisify(this.client.setex).bind(this.client);
+    this.delAsync = promisify(this.client.del).bind(this.client);
 
     this.client.on('error', (error) => {
       console.log(`Redis client not connected to the server: ${error.message}`);
+    });
+
+    this.client.on('end', () => {
+      console.log('Redis client disconnected');
     });
 
     this.client.on('connect', () => {
@@ -33,8 +38,8 @@ class RedisClient {
    * @return {string}  value of key
    */
   async get(key) {
-    await this.client.connect();
     const value = await this.getAsync(key);
+    console.log(value, '===========');
     return value;
   }
 
@@ -46,7 +51,6 @@ class RedisClient {
    * @return {undefined}  No return
    */
   async set(key, value, duration) {
-    await this.client.connect();
     return this.setExAsync(key, duration, value);
   }
 
@@ -56,7 +60,7 @@ class RedisClient {
    * @return {undefined}  No return
    */
   async del(key) {
-    this.client.del(key);
+    return this.delAsync(key);
   }
 }
 
