@@ -71,7 +71,7 @@ export default class FilesController {
       return res.status(400).json({ error: 'Cannot write file' });
     }
     item.localPath = path;
-    const result = await dbClient.filesCollection.insertOne({ item });
+    const result = await dbClient.filesCollection.insertOne(item);
     const returnItem = {
       id: result.insertedId,
       userId,
