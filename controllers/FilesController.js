@@ -78,6 +78,7 @@ export default class FilesController {
       name: req.body.name,
       type: req.body.type,
       parentId,
+      isPublic: req.body.isPublic || false,
     };
     return res.status(201).json(returnItem);
   }
