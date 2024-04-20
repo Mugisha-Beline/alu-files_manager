@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
+import { ObjectID } from 'mongodb';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
@@ -27,8 +28,8 @@ export default class FilesController {
       return res.status(400).json({ error: 'Missing data' });
     }
     const parentId = req.body.parentId || 0;
-    if (req.body.parentId) {
-      const parent = await dbClient.filesCollection.findOne({ parentId });
+    if (req.body.parentId && req.body.parentId !== '0') {
+      const parent = await dbClient.filesCollection.findOne({ _id: ObjectID(parentId) });
       if (!parent) {
         return res.status(400).json({ error: 'Parent not found' });
       }
@@ -65,7 +66,7 @@ export default class FilesController {
     const path = `${topFolder}/${filename}`;
     const { data } = req.body;
     const buff = Buffer.from(data, 'base64');
-    asyncFs.mkdir(topFolder, { recursive: true });
+    await asyncFs.mkdir(topFolder, { recursive: true });
     const writtenFile = asyncFs.writeFile(path, buff);
     if (!writtenFile) {
       return res.status(400).json({ error: 'Cannot write file' });
