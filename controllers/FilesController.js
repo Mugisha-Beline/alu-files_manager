@@ -110,4 +110,27 @@ export default class FilesController {
       parentId: file.parentId,
     });
   }
+
+  static async getIndex(req, res) {
+    const token = req.headers['x-token'];
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const userId = await redisClient.get(`auth_${token}`);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const parentId = req.query.parentId || 0;
+    const parent = await dbClient.filesCollection.findOne({ _id: ObjectID(parentId) });
+    if (parent && parent.type !== 'folder') {
+      return res.status(400).json({ error: 'Parent is not a folder' });
+    }
+    const page = req.query.page || 0;
+    const limit = 20;
+    const skip = page * limit;
+    const query = { parentId };
+    query.userId = ObjectID(userId);
+    const data = await dbClient.filesCollection.find(query).skip(skip).limit(limit).toArray();
+    return res.status(200).json(data);
+  }
 }
