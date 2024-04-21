@@ -125,7 +125,7 @@ export default class FilesController {
     if (parentId !== 0) {
       parent = await dbClient.filesCollection.findOne({ _id: ObjectID(parentId) });
       if (!parent) {
-        return res.status(400).json({ error: 'Parent not found' });
+        return res.status(200).json([]);
       }
     }
     if (parent !== 0 && parent.type !== 'folder') {
