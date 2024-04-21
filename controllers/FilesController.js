@@ -129,7 +129,15 @@ export default class FilesController {
     const files = await dbClient.filesCollection.find({
       parentId,
       userId,
-    }).limit(limit).skip(skip).toArray();
+    }).limit(limit).skip(skip).toArray()
+      .map((file) => ({
+        id: file._id,
+        userId: file.userId,
+        name: file.name,
+        type: file.type,
+        isPublic: file.isPublic,
+        parentId: file.parentId,
+      }));
     return res.status(200).json(files);
   }
 }
