@@ -121,7 +121,7 @@ export default class FilesController {
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    if (req.query.parentId) {
+    if (req.query.parentId && req.query.parentId !== '0') {
       try {
         const parent = await dbClient.filesCollection.findOne({
           _id: ObjectID(req.query.parentId),
@@ -148,7 +148,7 @@ export default class FilesController {
 
     const query = { };
     if (parentId !== 0) {
-      query.parentId = parentId;
+      query.parentId = parentId === '0' ? 0 : parentId;
     }
 
     const files = await dbClient.filesCollection
