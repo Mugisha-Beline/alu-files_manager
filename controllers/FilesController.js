@@ -146,7 +146,7 @@ export default class FilesController {
 
     console.log('skip', skip);
 
-    const query = { userId };
+    const query = { };
     if (parentId !== 0) {
       query.parentId = parentId;
     }
