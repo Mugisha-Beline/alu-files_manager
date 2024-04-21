@@ -122,15 +122,21 @@ export default class FilesController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     if (req.query.parentId) {
-      const parent = await dbClient.filesCollection.findOne({
-        _id: ObjectID(req.query.parentId),
-        userId: ObjectID(userId),
-      });
-      if (!parent) {
+      try {
+        const parent = await dbClient.filesCollection.findOne({
+          _id: ObjectID(req.query.parentId),
+          userId: ObjectID(userId),
+        });
+        if (!parent) {
+          return res.status(200).json([]);
+        }
+      } catch (_err) {
         return res.status(200).json([]);
       }
     }
+    console.log(req.query.parentId, '======');
     const parentId = req.query.parentId || 0;
+    console.log(parentId, '=== real ===');
     const page = parseInt(req.query.page || 0, 10);
     const limit = 20;
     const skip = page * limit;
@@ -138,15 +144,16 @@ export default class FilesController {
     const files = await dbClient.filesCollection.find({
       parentId,
       userId,
-    }).limit(limit).skip(skip).toArray()
-      .map((file) => ({
-        id: file._id,
-        userId: file.userId,
-        name: file.name,
-        type: file.type,
-        isPublic: file.isPublic,
-        parentId: file.parentId,
-      }));
-    return res.status(200).json(files);
+    }).limit(limit).skip(skip).toArray();
+
+    const result = files.map((file) => ({
+      id: file._id,
+      userId: file.userId,
+      name: file.name,
+      type: file.type,
+      isPublic: file.isPublic,
+      parentId: file.parentId,
+    }));
+    return res.status(200).json(result);
   }
 }
