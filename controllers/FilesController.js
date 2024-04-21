@@ -121,32 +121,14 @@ export default class FilesController {
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    // if (req.query.parentId && req.query.parentId !== '0') {
-    //   try {
-    //     const parent = await dbClient.filesCollection.findOne({
-    //       _id: ObjectID(req.query.parentId),
-    //       userId,
-    //     });
-    //     console.log(parent, '=== parent ===');
-    //     if (!parent && parent.type !== 'folder') {
-    //       return res.status(200).json([]);
-    //     }
-    //   } catch (_err) {
-    //     return res.status(200).json([]);
-    //   }
-    // }
-    console.log(req.query.parentId, '======');
-    const parentId = req.query.parentId || 0;
-    console.log(parentId, '=== real ===');
 
     const page = parseInt(req.query.page || 0, 10);
-    console.log(page, '=== page ===');
     const limit = 20;
     const skip = page * limit;
 
     console.log('skip', skip);
 
-    const query = { };
+    const query = {};
     if (req.query.parentId) {
       query.parentId = ObjectID(req.query.parentId);
     }
