@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 import { ObjectID } from 'mongodb';
@@ -120,23 +121,31 @@ export default class FilesController {
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    const parentId = req.query.parentId || 0;
-    let parent = 0;
-    if (parentId !== 0 && req.query.parentId) {
-      parent = await dbClient.filesCollection.findOne({ _id: ObjectID(parentId) });
-      if (!parent) {
-        return res.status(200).json([]);
+    const { parentId, page } = req.query;
+    const files = dbClient.filesCollection;
+    const query = { userId };
+    if (parentId) {
+      query.parentId = ObjectID(parentId);
+    } else {
+      query.parentId = 0;
+    }
+
+    files.aggregate([
+      { $match: query },
+      { $skip: page > 0 ? ((page - 1) * 20) : 0 },
+      { $limit: 20 },
+    ]).toArray((err, results) => {
+      if (err) {
+        return res.status(404).json({ error: 'Not found' });
       }
-    }
-    if (parent !== 0 && parent.type !== 'folder') {
-      return res.status(200).json([]);
-    }
-    const page = parseInt(req.query.page || 0, 10);
-    const limit = 20;
-    const skip = page * limit;
-    const query = { parentId };
-    query.userId = userId;
-    const data = await dbClient.filesCollection.find(query).skip(skip).limit(limit).toArray();
-    return res.status(200).json(data);
+      return res.status(200).json(results.map((file) => ({
+        id: file._id,
+        userId: file.userId,
+        name: file.name,
+        type: file.type,
+        isPublic: file.isPublic,
+        parentId: file.parentId,
+      })));
+    });
   }
 }
