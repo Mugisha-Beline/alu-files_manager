@@ -178,4 +178,34 @@ export default class FilesController {
       parentId: file.parentId,
     });
   }
+
+  static async putUnpublish(req, res) {
+    const token = req.headers['x-token'];
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const userId = await redisClient.get(`auth_${token}`);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const fileId = req.params.id;
+    const file = await dbClient.filesCollection.findOne({
+      _id: ObjectID(fileId),
+      userId: ObjectID(userId),
+    });
+    if (!file) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+    file.isPublic = false;
+    await dbClient.filesCollection.updateOne({ _id: ObjectID(fileId) },
+      { $set: { isPublic: false } });
+    return res.status(200).json({
+      id: file._id,
+      userId: file.userId,
+      name: file.name,
+      type: file.type,
+      isPublic: file.isPublic,
+      parentId: file.parentId,
+    });
+  }
 }
