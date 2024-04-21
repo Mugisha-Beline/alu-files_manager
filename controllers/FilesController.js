@@ -147,9 +147,9 @@ export default class FilesController {
     console.log('skip', skip);
 
     const query = { };
-    if (parentId !== 0 && parentId !== '0') {
-      query.parentId = ObjectID(parentId);
-    }
+    // if (parentId !== 0 && parentId !== '0') {
+    query.parentId = ObjectID(parentId);
+    // }
 
     const files = await dbClient.filesCollection
       .find(query)
