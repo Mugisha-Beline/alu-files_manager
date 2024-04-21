@@ -148,7 +148,7 @@ export default class FilesController {
 
     const query = { };
     if (req.query.parentId) {
-      query.parentId = ObjectID(req.query.parentIdntId);
+      query.parentId = ObjectID(req.query.parentId);
     }
 
     const files = await dbClient.filesCollection
