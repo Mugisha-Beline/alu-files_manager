@@ -121,29 +121,15 @@ export default class FilesController {
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    const { parentId, page } = req.query;
-    const files = dbClient.filesCollection;
-    const query = { userId };
-    if (parentId) {
-      query.parentId = ObjectID(parentId);
-    }
+    const parentId = req.query.parentId || 0;
+    const page = parseInt(req.query.page || 0, 10);
+    const limit = 20;
+    const skip = page * limit;
 
-    files.aggregate([
-      { $match: query },
-      { $skip: parseInt(page || 0, 10) * 20 },
-      { $limit: 20 },
-    ]).toArray((err, results) => {
-      if (err) {
-        return res.status(404).json({ error: 'Not found' });
-      }
-      return res.status(200).json(results.map((file) => ({
-        id: file._id,
-        userId: file.userId,
-        name: file.name,
-        type: file.type,
-        isPublic: file.isPublic,
-        parentId: file.parentId,
-      })));
-    });
+    const files = await dbClient.filesCollection.find({
+      parentId,
+      userId,
+    }).limit(limit).skip(skip).toArray();
+    return res.status(200).json(files);
   }
 }
