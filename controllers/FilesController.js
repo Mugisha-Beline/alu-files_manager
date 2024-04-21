@@ -130,7 +130,7 @@ export default class FilesController {
 
     files.aggregate([
       { $match: query },
-      { $skip: page > 0 ? ((page - 1) * 20) : 0 },
+      { $skip: parseInt(page || 0, 10) * 20 },
       { $limit: 20 },
     ]).toArray((err, results) => {
       if (err) {
