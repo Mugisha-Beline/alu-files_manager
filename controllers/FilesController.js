@@ -128,7 +128,7 @@ export default class FilesController {
           userId,
         });
         console.log(parent, '=== parent ===');
-        if (!parent) {
+        if (!parent && parent.type !== 'folder') {
           return res.status(200).json([]);
         }
       } catch (_err) {
