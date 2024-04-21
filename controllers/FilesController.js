@@ -122,14 +122,14 @@ export default class FilesController {
     }
     const parentId = req.query.parentId || 0;
     let parent = 0;
-    if (parentId !== 0) {
+    if (parentId !== 0 && req.query.parentId) {
       parent = await dbClient.filesCollection.findOne({ _id: ObjectID(parentId) });
       if (!parent) {
         return res.status(200).json([]);
       }
     }
     if (parent !== 0 && parent.type !== 'folder') {
-      return res.status(400).json({ error: 'Parent is not a folder' });
+      return res.status(200).json([]);
     }
     const page = req.query.page || 0;
     const limit = 20;
