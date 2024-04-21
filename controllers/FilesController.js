@@ -141,8 +141,10 @@ export default class FilesController {
 
     const page = parseInt(req.query.page || 0, 10);
     console.log(page, '=== page ===');
-    const limit = 20;
-    const skip = page * limit;
+    const limit = 1;
+    const skip = page > 0 ? (page - 1) * limit : 0;
+
+    console.log('skip', skip);
 
     const files = await dbClient.filesCollection.find({
       parentId,
