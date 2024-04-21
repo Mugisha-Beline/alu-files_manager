@@ -241,13 +241,13 @@ export default class FilesController {
       if (!user) {
         return res.status(404).json({ error: 'Not found' });
       }
-      if (file.type === 'folder') {
-        return res.status(400).json({ error: 'A folder doesn\'t have content' });
-      }
 
       try {
         if (file.userId.toString() !== userId) {
           return res.status(404).json({ error: 'Not found' });
+        }
+        if (file.type === 'folder') {
+          return res.status(400).json({ error: 'A folder doesn\'t have content' });
         }
         const fileData = await asyncFs.readFile(file.localPath);
         const contentType = mime.contentType(file.name);
