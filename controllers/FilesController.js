@@ -125,8 +125,9 @@ export default class FilesController {
       try {
         const parent = await dbClient.filesCollection.findOne({
           _id: ObjectID(req.query.parentId),
-          userId: ObjectID(userId),
+          userId,
         });
+        console.log(parent, '=== parent ===');
         if (!parent) {
           return res.status(200).json([]);
         }
@@ -137,7 +138,9 @@ export default class FilesController {
     console.log(req.query.parentId, '======');
     const parentId = req.query.parentId || 0;
     console.log(parentId, '=== real ===');
+
     const page = parseInt(req.query.page || 0, 10);
+    console.log(page, '=== page ===');
     const limit = 20;
     const skip = page * limit;
 
