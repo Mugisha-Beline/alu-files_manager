@@ -121,15 +121,21 @@ export default class FilesController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     const parentId = req.query.parentId || 0;
-    const parent = await dbClient.filesCollection.findOne({ _id: ObjectID(parentId) });
-    if (parent && parent.type !== 'folder') {
+    let parent = 0;
+    if (parentId !== 0) {
+      parent = await dbClient.filesCollection.findOne({ _id: ObjectID(parentId) });
+      if (!parent) {
+        return res.status(400).json({ error: 'Parent not found' });
+      }
+    }
+    if (parent !== 0 && parent.type !== 'folder') {
       return res.status(400).json({ error: 'Parent is not a folder' });
     }
     const page = req.query.page || 0;
     const limit = 20;
     const skip = page * limit;
     const query = { parentId };
-    query.userId = ObjectID(userId);
+    query.userId = userId;
     const data = await dbClient.filesCollection.find(query).skip(skip).limit(limit).toArray();
     return res.status(200).json(data);
   }
