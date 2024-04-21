@@ -131,7 +131,7 @@ export default class FilesController {
     if (parent !== 0 && parent.type !== 'folder') {
       return res.status(200).json([]);
     }
-    const page = req.query.page || 0;
+    const page = parseInt(req.query.page || 0, 10);
     const limit = 20;
     const skip = page * limit;
     const query = { parentId };
