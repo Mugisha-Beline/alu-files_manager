@@ -126,8 +126,6 @@ export default class FilesController {
     const query = { userId };
     if (parentId) {
       query.parentId = ObjectID(parentId);
-    } else {
-      query.parentId = 0;
     }
 
     files.aggregate([
